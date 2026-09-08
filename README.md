@@ -1,6 +1,10 @@
+<img src="store/icon-512.png" alt="" width="96" align="left" hspace="18" vspace="4" />
+
 # Mola
 
 **A short, self-authored pause — right at the limit you set yourself.**
+
+<br clear="left" />
 
 Mola is an Android digital-wellbeing app. You pick one app, you set your own daily minute
 limit, and when you cross it Mola opens a brief pause over that app: one question, one
@@ -181,6 +185,19 @@ verify the release path without any credentials. To produce a signed build, copy
 A physical Android phone is required to validate Usage Access, foreground detection,
 overlays, voice recognition and service behaviour. Emulators do not exercise these
 faithfully.
+
+### Icon artwork
+
+The adaptive launcher icon, its themed-icon and notification variants, and the Play Console
+rasters in `store/` are all generated from one set of geometry constants:
+
+```bash
+python scripts/render-icons.py
+```
+
+Edit the geometry in `scripts/render-icons.py` rather than the generated drawables. The
+script also asserts that the artwork stays inside the adaptive icon's safe radius, so no
+launcher mask clips it.
 
 ---
 
