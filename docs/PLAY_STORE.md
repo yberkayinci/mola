@@ -1,0 +1,113 @@
+# Play Store Submission Checklist
+
+Mola's technical release path is ready; what remains is mostly Play Console paperwork. The
+sensitive permissions are the part that decides whether review goes smoothly, so they are
+handled first.
+
+## 1. The three review risks, in order
+
+Mola requests three permissions that Google reviews individually. Weak justifications here
+are the most likely cause of rejection — not the code.
+
+### `SYSTEM_ALERT_WINDOW` (draw over other apps)
+
+This is the core of the product and cannot be replaced by a notification: the pause has to
+appear over the app the user is currently in. In the Play Console declaration, say plainly
+that the overlay is shown **only** after the user's own configured limit for their own
+selected app is crossed, is dismissible by the user, and never covers system UI or another
+app's controls for the purpose of misleading the user.
+
+### `PACKAGE_USAGE_STATS` (Usage Access)
+
+Declare that Mola reads foreground time for **one user-selected app only**, on-device, and
+transmits nothing. This is a permitted digital-wellbeing use, but the declaration must say
+so explicitly rather than assume it is obvious.
+
+### `FOREGROUND_SERVICE_SPECIAL_USE`
+
+`specialUse` requires a written justification, and Google may reject it if a standard type
+fits better. Mola's manifest already carries a `PROPERTY_SPECIAL_USE_FGS_SUBTYPE` value.
+Confirm the console justification matches it: a user-started service polling usage every
+60 seconds for one selected app, running only while the user has monitoring switched on,
+with a persistent notification.
+
+> If `specialUse` is challenged, the fallback is to argue the service is user-initiated and
+> user-visible, and that no existing type (`dataSync`, `health`, …) describes usage-limit
+> monitoring. Have this ready before submitting.
+
+## 2. Data safety form
+
+Mola's default configuration makes this section short. Answers:
+
+| Question | Answer |
+|---|---|
+| Does your app collect or share user data? | **No** in the default configuration |
+| Is data encrypted in transit? | Yes (HTTPS) — applies only to the optional user-key path |
+| Can users request data deletion? | Yes — in-app, immediate (*Tüm verileri sil*) |
+| Data collected by the developer | **None.** No account, no analytics, no telemetry, no ads SDK |
+
+Disclose the optional path honestly: if the user supplies their **own** API key, their
+entered text is sent to Google under that user's own key. This is user-initiated
+third-party processing, not developer collection — but describe it in the app's store
+listing and privacy policy rather than leaving it implicit. [`PRIVACY.md`](../PRIVACY.md)
+already covers it.
+
+**Privacy policy URL.** Required. Once the repository is public, the raw GitHub URL for
+`PRIVACY.md` is acceptable, though a plain hosted page (GitHub Pages) reads better.
+
+## 3. Content and policy
+
+- **Health disclaimer.** Mola must not read as a medical or mental-health service. The
+  listing should carry the same boundary the app does: it does not diagnose, and it is not
+  therapy. `PRIVACY.md` §8 has the wording.
+- **Category:** Health & Fitness, or Tools.
+- **Content rating questionnaire:** complete it; expect "Everyone".
+- **Ads:** none. **In-app purchases:** none.
+- **Target audience:** 13+. Do not opt into the Families programme.
+
+## 4. Technical release gates
+
+- [x] `applicationId` is `com.yberkayinci.mola` — **permanent once published**
+- [x] No API key or secret in the build (`GEMINI_API_KEY` plumbing removed entirely)
+- [x] `isMinifyEnabled` / `isShrinkResources` on for release
+- [x] Release signing read from `keystore.properties` or `MOLA_*` env vars, never committed
+- [x] CI verifies unit tests, `assembleDebug` and `assembleRelease`
+- [ ] Generate the upload keystore and **back it up** — losing it costs you the listing
+- [ ] Enrol in Play App Signing
+- [ ] Bump `versionCode` for every upload (currently `1`, `versionName` `0.1.0`)
+- [ ] `./gradlew bundleRelease` and upload the `.aab`
+- [ ] Install and run the **minified release** build on a physical device before uploading —
+      R8 is newly enabled and CI only proves it compiles, not that it runs
+- [ ] Add an adaptive launcher icon (`mipmap-anydpi-v26`); the current launcher is a plain
+      vector drawable
+
+## 5. Store listing assets still needed
+
+- App icon, 512×512 PNG
+- Feature graphic, 1024×500
+- At least 2 phone screenshots (onboarding, Home, the pause, the daily reflection)
+- Short description (80 chars) and full description (4000) — Turkish, since the UI is Turkish
+- Declare Turkish as the default listing language
+
+## 6. Suggested testing track order
+
+1. **Internal testing** — verify the signed release build end to end on your own device.
+2. **Closed testing** — Play now expects a period of closed testing with real testers
+   before a personal developer account can go to production. Start recruiting early; this
+   is usually the longest calendar item, not the code.
+3. **Production.**
+
+## 7. Recommended pre-submission device pass
+
+Run these against the **signed release** build, not debug:
+
+1. Fresh install → onboarding by text → profile generated by the on-device engine.
+2. Grant Usage Access and overlay permission from Home.
+3. Set a limit low enough to cross within a few minutes; start monitoring.
+4. Use the target app until the pause appears over it. Take both decisions.
+5. Airplane mode → confirm the pause still generates.
+6. Enter a personal API key → confirm cards still generate, then delete the key and confirm
+   the app returns to the on-device engine.
+7. *Tüm verileri sil* → confirm the app returns to onboarding with nothing retained.
+
+[`AI_DEVICE_QA.md`](AI_DEVICE_QA.md) has the fuller procedure.

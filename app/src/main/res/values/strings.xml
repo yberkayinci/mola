@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Mola</string>
+    <string name="monitor_channel_name">Mola kullanım takibi</string>
+    <string name="monitor_notification_title">Mola aktif</string>
+    <string name="monitor_notification_text">Seçtiğin uygulamanın kullanım süresi izleniyor.</string>
+    <string name="monitor_service_description">Kullanıcının seçtiği uygulama için cihaz içi süre eşiğini izler.</string>
+</resources>

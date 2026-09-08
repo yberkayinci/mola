@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <exclude domain="file" path="mola_state.json" />
+    <exclude domain="sharedpref" path="mola_monitor.xml" />
+    <exclude domain="sharedpref" path="mola_ai_settings.xml" />
+</full-backup-content>
